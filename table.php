@@ -1,55 +1,62 @@
 <?php
+	// table.php
 
-//getting our configuration
-require_once("../config.php");
+	//getting our config
+	require_once("../config.php");
 
-//create connection
+	//create connection
+	$mysql = new mysqli("localhost", $db_username, $db_password, "webpr2016_laukoi");
 
-$mysql = new mysqli ("localhost", $db_username,
-$db_password, "webpr2016_laukoi");
+	//SQL sentence
+	$stmt = $mysql->prepare("SELECT id, recipient, message, created FROM messages_sample ORDER BY created DESC LIMIT 10");
 
-//SQL senctence
-$stmt = $mysql->prepare("SELECT Id, recipient, message, created
-FROM messages_sample ORDER BY created LIMIT 10");
+	//if error in sentence
+	echo $mysql->error;
 
-//if error in sentendce
-echo $mysql->error;
+	//variables for data for each row we will get
+	$stmt->bind_result($id, $recipient, $message, $created);
 
-$stmt->bind_result($Id, $recipient, $message, $created);
+	//query
+	$stmt->execute();
 
-$stmt->execute();
+	$table_html = "";
 
-$table_html = "";
-
-//add smth to string .=
-$table_html .= "<table>";
-  $table_html .= "<tr>";
-  $table_html .= "<th>Id</th>";
-  $table_html .= "<th>message</th>";
-  $table_html .= "<th>recipient</th>";
-  $table_html .= "<th>created</th>";
-$table_html .= "</tr>";
-
-//GET RESULT
-//we have multiple rows
-while($stmt->fetch()) {
-
-//DO SOMETHING FOR EACH ROW
-//echo $Id." ".$message."<br>";
-
-$table_html .= "<tr>"; //start new row
-  $table_html .= "<td>".$Id."</td>";
-  $table_html .= "<td>".$recipient."</td>";
-    $table_html .= "<td>".$message."</td>";
-      $table_html .= "<td>".$created."</td>";
-  $table_html .= "</tr>";
+	//add smth to string .=
+	$table_html .= "<table>";
+		$table_html .= "<tr>";
+			$table_html .= "<th>ID</th>";
+			$table_html .= "<th>Recipient</th>";
+			$table_html .= "<th>Message</th>";
+			$table_html .= "<th>Created</th>";
+			$table_html .= "<th>edit</th>";
 
 
+
+		$table_html .= "</tr>";
+
+	// GET RESULT
+	//we have multiple rows
+	while($stmt->fetch()){
+
+		//DO SOMETHING FOR EACH ROW
+		//echo $id." ".$message."<br>";
+		$table_html .= "<tr>"; //start new row
+			$table_html .= "<td>".$id."</td>"; //add columns
+			$table_html .= "<td>".$recipient."</td>";
+			$table_html .= "<td>".$message."</td>";
+			$table_html .= "<td>".$created."</td>";
+
+			$table_html .= "<td> <a href='edit.php?edit=".$id."'>edit</a></td>";
+
+		$table_html .= "</tr>"; //end row
 
 	}
+	$table_html .= "</table>";
+	echo $table_html;
 
-  $table_html .= "</table>";
-  echo $table_html;
+
+
+
+
 ?>
-
-<a href= "app.php">app</a>
+<a href="app.php">app</a>
